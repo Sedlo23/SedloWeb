@@ -1,0 +1,15 @@
+# Django web framework
+Django==4.2.5  # Use the latest stable version or your specific Django version
+
+# Gunicorn application server
+gunicorn==20.1.0  # Gunicorn for production
+
+# Whitenoise for serving static files
+whitenoise==6.4.0  # Latest version for handling static files
+
+# psycopg2-binary if using PostgreSQL database (optional)
+psycopg2-binary==2.9.7  # Only required if you are using PostgreSQL
+
+# Additional dependencies your project may require
+# (list any other packages your project needs below)
+pillow==11.0.0
