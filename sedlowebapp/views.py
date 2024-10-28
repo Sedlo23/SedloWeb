@@ -25,7 +25,7 @@ def telegramy(request):
 def ostatni(request):
     return render(request, 'ostatni.html')
 
-# SedloWeb/views.py# SedloWeb/views.py
+# sedloweb/views.py# sedloweb/views.py
 @login_required
 def programy(request):
     files = BinaryFile.objects.all()  # Retrieve all uploaded files

@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from SedloWebApp.models import RelatedPDF, BinaryFile, STLModel
+from sedlowebapp.models import RelatedPDF, BinaryFile, STLModel
 from .models import Telegram, TelegramPDF
 
 # Register your models here.

@@ -1,4 +1,4 @@
-# SedloWeb/models.py
+# sedloweb/models.py
 from django.db import models
 
 

@@ -7,7 +7,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('SedloWebApp', '0001_initial'),
+        ('sedlowebapp', '0001_initial'),
     ]
 
     operations = [
@@ -36,7 +36,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('pdf_file', models.FileField(upload_to='telegrams/pdfs/')),
-                ('telegram', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='pdfs', to='SedloWebApp.telegram')),
+                ('telegram', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='pdfs', to='sedlowebapp.telegram')),
             ],
         ),
     ]
