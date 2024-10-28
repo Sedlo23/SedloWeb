@@ -26,7 +26,7 @@ SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'your-default-secret-key')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG', 'False') == 'True'
 
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'your-app-url.ondigitalocean.app').split(',')
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'urchin-app-c8bre.ondigitalocean.app').split(',')
 
 
 # Application definition
