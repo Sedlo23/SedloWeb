@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ telegram.name }} Details</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <!-- Load PDF.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
+</head>
+<body>
+    <h1>{{ telegram.name }}</h1>
+    <a href="{{ telegram.zip_file.url }}" download class="button download-button">Stáhnout</a>
+
+    <div>
+        <h2>Associated PDFs</h2>
+        {% if telegram.pdfs.all %}
+            {% for pdf in telegram.pdfs.all %}
+                <div class="pdf-container" id="pdf-viewer-{{ forloop.counter }}" style="width: 100%; margin-bottom: 20px;"></div>
+                <script>
+                    (function() {
+                        // Set the worker source after loading PDF.js
+                        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.worker.min.js';
+
+                        const url{{ forloop.counter }} = "{{ pdf.pdf_file.url }}";
+                        const containerId{{ forloop.counter }} = "pdf-viewer-{{ forloop.counter }}";
+
+                        // Function to render all pages of the PDF
+                        async function renderAllPages(url, containerId) {
+                            const loadingTask = pdfjsLib.getDocument(url);
+                            const pdf = await loadingTask.promise;
+
+                            // Loop through each page and render it on a new canvas
+                            for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+                                const page = await pdf.getPage(pageNum);
+                                const viewport = page.getViewport({ scale: 1.5 });
+
+                                // Create a new canvas for each page
+                                const canvas = document.createElement("canvas");
+                                canvas.style.marginBottom = "20px"; // Add some space between pages
+                                const context = canvas.getContext("2d");
+
+                                canvas.height = viewport.height;
+                                canvas.width = viewport.width;
+                                document.getElementById(containerId).appendChild(canvas);
+
+                                await page.render({ canvasContext: context, viewport }).promise;
+                            }
+                        }
+
+                        // Call the function to render all pages
+                        renderAllPages(url{{ forloop.counter }}, containerId{{ forloop.counter }});
+                    })();
+                </script>
+            {% endfor %}
+        {% else %}
+            <p>No PDFs available for this telegram.</p>
+        {% endif %}
+    </div>
+</body>
+</html>

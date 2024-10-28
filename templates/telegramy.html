@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Telegramy - Map View</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+</head>
+<body>
+    <h1>Telegramy</h1>
+    <div id="map" style="height: 750px; width: 100%; margin: 20px 0;"></div>
+
+    <script>
+        const telegrams = [
+            {% for telegram in telegrams %}
+            {
+                id: {{ telegram.id }},
+                name: "{{ telegram.name|escapejs }}",
+                latitude: {{ telegram.latitude }},
+                longitude: {{ telegram.longitude }}
+            }{% if not forloop.last %},{% endif %}
+            {% endfor %}
+        ];
+        
+        // Initialize the map centered on Czechia
+        const map = L.map('map').setView([50, 15], 6);
+        
+        // Dark base map layer (CartoDB Dark Matter)
+        const darkBaseLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+            maxZoom: 18,
+            attribution: '&copy; <a href="https://carto.com/attributions">CARTO</a>'
+        }).addTo(map);
+
+        // OpenRailwayMap overlay layer
+        const railwayOverlay = L.tileLayer('https://{s}.tiles.openrailwaymap.org/standard/{z}/{x}/{y}.png', {
+            maxZoom: 18,
+            attribution: 'Map data © <a href="https://www.openrailwaymap.org">OpenRailwayMap</a> contributors'
+        });
+
+        // Layer control to toggle the railway overlay
+        L.control.layers(null, { 'Railway Map Overlay': railwayOverlay }).addTo(map);
+
+        // Add markers with tooltips for each telegram
+        telegrams.forEach(telegram => {
+            if (telegram.latitude && telegram.longitude) {
+                const marker = L.marker([telegram.latitude, telegram.longitude]).addTo(map);
+                
+                // Attach a tooltip to each marker that shows the name
+                marker.bindTooltip(telegram.name, { permanent: true, direction: 'top' });
+
+                // Add a click event to redirect to the detail page
+                marker.on('click', function() {
+                    window.location.href = `{% url 'telegram_detail' 0 %}`.replace('0', telegram.id);
+                });
+            }
+        });
+    </script>
+
+    <a href="{% url 'main_page' %}" class="back-button">Back to Home</a>
+</body>
+</html>

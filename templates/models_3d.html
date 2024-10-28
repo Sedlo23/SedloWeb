@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Models</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128/examples/js/loaders/STLLoader.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>3D Models</h1>
+               <div class="models-grid">
+            {% for model in stl_models %}
+                <div class="model-preview">
+                    <h3>{{ model.name }}</h3>
+                    <a href="{% url 'model_detail' model.id %}">
+                        <div class="stl-viewer" id="viewer-{{ forloop.counter }}" data-url="{{ model.stl_file.url }}"></div>
+                    </a>
+                </div>
+            {% endfor %}
+        </div>
+        <a href="{% url 'main_page' %}" class="back-button">Back to Home</a>
+    </div>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const containers = document.querySelectorAll('.stl-viewer');
+
+        containers.forEach(container => {
+            const url = container.getAttribute('data-url');
+
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
+            const renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(container.clientWidth, container.clientHeight);
+            container.appendChild(renderer.domElement);
+
+            // Přidání světel
+            const light = new THREE.DirectionalLight(0xffffff, 1);
+            light.position.set(1, 1, 1).normalize();
+            scene.add(light);
+            const ambientLight = new THREE.AmbientLight(0x404040); // Jemnější osvětlení
+            scene.add(ambientLight);
+
+            // Načtení STL modelu
+            const loader = new THREE.STLLoader();
+            loader.load(url, function (geometry) {
+                const material = new THREE.MeshPhongMaterial({ color: 0x0055ff });
+                const mesh = new THREE.Mesh(geometry, material);
+                scene.add(mesh);
+
+                // Výpočet rozměrů modelu a nastavení jeho středu
+                geometry.computeBoundingBox();
+                const boundingBox = geometry.boundingBox;
+
+                const centerX = (boundingBox.min.x + boundingBox.max.x) / 2;
+                const centerY = (boundingBox.min.y + boundingBox.max.y) / 2;
+                const centerZ = (boundingBox.min.z + boundingBox.max.z) / 2;
+
+                mesh.position.set(-centerX, -centerY, -centerZ); // Nastavení středu modelu
+
+                // Vzdálenost kamery na základě velikosti modelu
+                const maxDim = Math.max(
+                    boundingBox.max.x - boundingBox.min.x,
+                    boundingBox.max.y - boundingBox.min.y,
+                    boundingBox.max.z - boundingBox.min.z
+                );
+                const fov = camera.fov * (Math.PI / 180); // Konverze z úhlu na radiány
+                let cameraDistance = Math.abs(maxDim / (2 * Math.tan(fov / 2)));
+
+                camera.position.set(0, 0, cameraDistance * 2); // Větší vzdálenost kamery s rezervou
+                camera.lookAt(new THREE.Vector3(0, 0, 0));
+
+                // Animace pro otáčení modelu v osách Y a Z
+                const animate = function () {
+                    requestAnimationFrame(animate);
+                    mesh.rotation.y += 0.002; // Otáčení kolem osy Y
+                    mesh.rotation.x += 0.001; // Pomalejší otáčení kolem osy X
+                    renderer.render(scene, camera);
+                };
+                animate();
+            });
+        });
+    });
+</script>
+
+
+
+</body>
+</html>

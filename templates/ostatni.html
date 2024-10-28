@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+      {% load static %}
+      <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <title>ETCS VBC Code Calculator</title>
+</head>
+<body>
+    <h1>ETCS VBC Code Calculator</h1>
+    <form class="form-container" id="vbcForm" method="post" action="">
+        {% csrf_token %}
+        <label for="nidc">NIDC:</label>
+        <input type="text" id="nidc" name="nidc" required><br><br>
+
+        <label for="vbcmk">VBCMK:</label>
+        <input type="text" id="vbcmk" name="vbcmk" required><br><br>
+
+        <label for="tbvc">TBVC:</label>
+        <input type="text" id="tbvc" name="tbvc" required><br><br>
+
+        <button type="button" onclick="calculateVBC()">Calculate</button>
+    </form>
+
+    <h2>Results:</h2>
+ <h1>
+     <pre id="results"></pre>
+ </h1>
+
+
+    <script>
+        function calculateVBC() {
+            const nidc = parseInt(document.getElementById('nidc').value);
+            const vbcmk = parseInt(document.getElementById('vbcmk').value);
+            const tbvc = parseInt(document.getElementById('tbvc').value);
+
+            // Calculate binary codes
+            const aBinary = tbvc.toString(2).padStart(8, '0') +
+                            nidc.toString(2).padStart(10, '0') +
+                            vbcmk.toString(2).padStart(6, '0');
+            const cBinary = vbcmk.toString(2).padStart(6, '0') +
+                            nidc.toString(2).padStart(10, '0');
+
+            // Convert binary to decimal
+            const aDecimal = parseInt(aBinary, 2);
+            const cDecimal = parseInt(cBinary, 2);
+
+            // Display results
+            document.getElementById('results').textContent = `
+                NIDC: ${nidc}    VBCMK: ${vbcmk}    TBVC: ${tbvc}
+                Set VBC: ${aBinary} ->  ${aDecimal}
+                Unset VBC: ${cBinary} -> ${cDecimal}
+            `;
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ stl_model.name }} - 3D Viewer</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128/examples/js/loaders/STLLoader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128/examples/js/controls/OrbitControls.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>{{ stl_model.name }}</h1>
+        <a href="{{ stl_model.stl_file.url }}" download class="button download-button">Download STL File</a>
+
+        <!-- Container for 3D viewer -->
+        <div id="viewer" style="width: 100%; height: 500px; background-color: #e0e0e0; margin-top: 20px; border-radius: 8px;"></div>
+
+        <a href="{% url 'models_3d' %}" class="button back-button">Back to 3D Models</a>
+    </div>
+
+    <script>
+        // Initial setup for Three.js scene
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(50, window.innerWidth / 500, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, 500);
+        document.getElementById("viewer").appendChild(renderer.domElement);
+
+        // Lighting setup
+        const light = new THREE.DirectionalLight(0xffffff, 1);
+        light.position.set(1, 1, 1).normalize();
+        scene.add(light);
+        const ambientLight = new THREE.AmbientLight(0x404040);
+        scene.add(ambientLight);
+
+        // OrbitControls for interactive movement
+        const controls = new THREE.OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;  // Smooths out controls
+        controls.dampingFactor = 0.25;
+        controls.screenSpacePanning = false;
+
+        // Loading the STL model
+        const loader = new THREE.STLLoader();
+        loader.load("{{ stl_model.stl_file.url }}", function (geometry) {
+            const material = new THREE.MeshPhongMaterial({ color: 0x0055ff });
+            const mesh = new THREE.Mesh(geometry, material);
+            scene.add(mesh);
+
+            // Centering the model
+            geometry.computeBoundingBox();
+            const boundingBox = geometry.boundingBox;
+            const centerX = (boundingBox.min.x + boundingBox.max.x) / 2;
+            const centerY = (boundingBox.min.y + boundingBox.max.y) / 2;
+            const centerZ = (boundingBox.min.z + boundingBox.max.z) / 2;
+            mesh.position.set(-centerX, -centerY, -centerZ);
+
+            // Calculate optimal distance for the camera
+            const maxDim = Math.max(boundingBox.max.x - boundingBox.min.x, boundingBox.max.y - boundingBox.min.y, boundingBox.max.z - boundingBox.min.z);
+            const fov = camera.fov * (Math.PI / 180);
+            const cameraDistance = Math.abs(maxDim / (2 * Math.tan(fov / 2)));
+
+            camera.position.set(0, 0, cameraDistance * 2);  // Position camera back for a good view
+            camera.lookAt(new THREE.Vector3(0, 0, 0));
+
+            // Render loop with orbit controls
+            const animate = function () {
+                requestAnimationFrame(animate);
+                controls.update();  // Necessary for smooth damping
+                renderer.render(scene, camera);
+            };
+            animate();
+        });
+
+        // Handle resizing for responsive viewing
+        window.addEventListener('resize', function () {
+            const width = window.innerWidth;
+            const height = 500;
+            renderer.setSize(width, height);
+            camera.aspect = width / height;
+            camera.updateProjectionMatrix();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Main Page</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+        <style>
+        body {
+            background: url('{% static 'images/rrt1.jpg' %}') no-repeat center center fixed;
+            background-size: cover;
+            color: #e8e8e8;
+
+        }
+    </style>
+</head>
+<body>
+
+<canvas id="background"></canvas>
+
+
+    <div class="navbar">
+        {% if user.is_authenticated %}
+            <form method="post" action="{% url 'logout' %}">
+                {% csrf_token %}
+                <button type="submit">Logout</button>
+            </form>
+        {% else %}
+            <a href="{% url 'login' %}">Login</a>
+        {% endif %}
+    </div>
+
+    <div class="container">
+
+        {% if user.is_authenticated %}
+            <div class="buttons-container">
+<a href="{% url 'zapisy_z_testovani' %}" class="page-button" style="background-image: url('{% static 'images/zapisy_icon.jpg' %}');">
+    <span>Zápisy z testování</span>
+</a>
+
+<a href="{% url 'programy' %}" class="page-button" style="background-image: url('{% static 'images/programy_icon.jpg' %}');">
+    <span>Programy</span>
+</a>
+
+<a href="{% url 'telegramy' %}" class="page-button" style="background-image: url('{% static 'images/telegramy_icon.jpg' %}');">
+    <span>Telegramy</span>
+</a>
+
+<a href="{% url 'ostatni' %}" class="page-button" style="background-image: url('{% static 'images/ostatni_icon.jpg' %}');">
+    <span>Ostatní</span>
+</a>
+
+                <a href="{% url 'models_3d' %}" class="page-button" style="background-image: url('{% static 'images/20240306_102315.jpg' %}');">
+    <span>3D modely</span>
+</a>
+
+            </div>
+       {% else %}
+
+        <div >
+
+
+            <a href="{% url 'ostatni' %}" class="page-button" style="background-image: url('{% static 'images/programy_icon.jpg' %}');">
+            <span>Žádost o přístup</span>
+        </a>
+
+        </div>
+
+        {% endif %}
+
+
+    </div>
+
+    <script src="{% static 'js/script.js' %}"></script>
+    <script src="{% static 'js/animation.js' %}"></script>
+
+
+
+
+
+</body>
+</html>

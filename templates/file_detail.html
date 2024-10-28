@@ -1,0 +1,40 @@
+<!-- file_detail.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ binary_file.name }} - Details</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+</head>
+<body>
+    <div class="container">
+        <div class="detail-header">
+            <h1>{{ binary_file.name }}</h1>
+            <p>{{ binary_file.uploaded_at|date:"F j, Y, g:i a" }}</p>
+            <p> {{ binary_file.long_desc }}</p>
+            <a href="{{ binary_file.file.url }}" download class="button download-button">Download Binary File</a>
+        </div>
+
+        <div class="pdf-section">
+            <h2>Related PDFs</h2>
+            {% if binary_file.pdfs.all %}
+                <div class="pdf-list">
+                    {% for pdf in binary_file.pdfs.all %}
+                        <a href="{{ pdf.pdf_file.url }}" download class="pdf-item">
+                            <div class="pdf-info">
+                                <span class="pdf-name">{{ pdf.pdf_file.name|default:"Unnamed PDF" }}</span>
+                            </div>
+                        </a>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <span>No PDFs available for this file.</span>
+            {% endif %}
+        </div>
+
+        <a href="{% url 'programy' %}" class="button back-button">Back to list</a>
+    </div>
+</body>
+</html>

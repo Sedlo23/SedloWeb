@@ -1,0 +1,26 @@
+<!-- programy.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Programy - Download Files</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+</head>
+<body>
+    <div class="container">
+        <h1>Available Files for Download</h1>
+
+            {% for file in files %}
+
+                        <a href="{% url 'file_detail' file.id %}" class="page-button" style="background-image: url('{% if file.image %}{{ file.image.url }}{% else %}{% static 'nofound.png' %}{% endif %}');">
+                            <span class="top-left">{{ file.name }}</span>
+                            <span class="bottom-right">{{ file.short_desc }}</span>
+                        </a>
+
+            {% endfor %}
+
+    </div>
+</body>
+</html>
