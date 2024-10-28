@@ -38,7 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'SedloWebApp.apps.SedlowebappConfig',
+    'SedloWebApp',
 ]
 
 MIDDLEWARE = [
@@ -72,7 +72,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'SedloWeb.wsgi.application'
+WSGI_APPLICATION = 'sedloweb.wsgi.application'
 
 
 # Database
